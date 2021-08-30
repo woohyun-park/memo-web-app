@@ -78,6 +78,7 @@
       <!-- Add Firebase products that you want to use -->
       <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-database.js"></script>
 
       <script type="module">
         // Import the functions you need from the SDKs you need
@@ -105,16 +106,48 @@
 
 
         // My Auth
-        let auth = firebase.auth();
+        let auth, database, userInfo;
+
+        auth = firebase.auth();
+        database = firebase.database();
         let authProvider = new firebase.auth.GoogleAuthProvider();
         auth.onAuthStateChanged(function(user){
           if (user){
             //auth success
+            console.log("success");
+            userInfo = user;
+            get_memo_list();
           } else {
             //auth fail
+            console.log("failed");
             auth.signInWithPopup(authProvider);
           }
-        })
+        });
+
+        function get_memo_list(){
+          let memoRef = database.ref('memos/' + userInfo.uid);
+          memoRef.on('child_added', on_child_added);
+
+        }
+
+        function on_child_added(data){
+          console.log(data.val());
+          let key = data.key;
+          let memoData = data.val();
+          let txt = memo.txt;
+          let title = memoData.title;
+          let firstTxt = txt.substr(0, 1);
+
+          let html =
+            "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"fn_get_data_one(this.id);\" >" +
+            "<i class=\"material-icons circle red\">" + firstTxt + "</i>" +
+            "<span class=\"title\">" + title + "</span>" +
+            "<p class='txt'>" + summary + "<br>" +
+            "</p>" +
+            "</li>";
+
+            $(".collection").append(html);
+        }
       </script>
     </body>
   </html>
