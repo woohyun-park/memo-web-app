@@ -37,12 +37,14 @@ function get_memo_list(){
 function get_data_one(key){
   selectedKey = key;
   let memoRef = database.ref('memos/' + userInfo.uid + '/' + key).once('value').then(function(snapshot){
-    document.querySelector('.textarea').value = snapshot.val().txt;
+    if(snapshot.val())
+        document.querySelector('.textarea').value = snapshot.val().txt;
   });
 }
 
 function on_child_added(data){
   window.get_data_one = get_data_one;
+  window.delete_data = delete_data;
 
   let key = data.key;
   let memoData = data.val();
@@ -56,10 +58,20 @@ function on_child_added(data){
     "<span class=\"title\">" + title + "</span>" +
     "<p class='txt'>" + txt + "<br>" +
     "</p>" +
+    "<a href=\"#!\" onclick=\"delete_data('" +key+ "')\" class=\"secondary-content\"><i class=\"material-icons\">grade</i></a>" +
     "</li>";
 
     let collection = document.querySelector(".collection");
     collection.insertAdjacentHTML("beforeend", html);
+}
+
+function delete_data(key){
+    if(!confirm('삭제하시겠습니까?')){
+        return ;
+    }
+    let memoRef = database.ref('memos/' + userInfo.uid + '/' + key);
+    memoRef.remove();
+    document.querySelector("#"+key).remove();
 }
 
 function save_data(){
