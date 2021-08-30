@@ -134,7 +134,7 @@
           console.log(data.val());
           let key = data.key;
           let memoData = data.val();
-          let txt = memo.txt;
+          let txt = memoData.txt;
           let title = memoData.title;
           let firstTxt = txt.substr(0, 1);
 
@@ -142,12 +142,24 @@
             "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"fn_get_data_one(this.id);\" >" +
             "<i class=\"material-icons circle red\">" + firstTxt + "</i>" +
             "<span class=\"title\">" + title + "</span>" +
-            "<p class='txt'>" + summary + "<br>" +
+            "<p class='txt'>" + txt + "<br>" +
             "</p>" +
             "</li>";
 
-            $(".collection").append(html);
+            document.querySelector(".collection").insertAdjacentHTML("beforeend", html);
         }
+
+        function save_data(){
+          let memoRef = database.ref('memos/' + userInfo.uid);
+          let txt = document.querySelector('.textarea').value;
+          let title = txt.indexOf('\n');
+          memoRef.push({
+            txt : txt,
+            createDate : new Date().getTime()
+          })
+        }
+
+        document.querySelector('.textarea').addEventListener('blur', save_data);
       </script>
     </body>
   </html>
