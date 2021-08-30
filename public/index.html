@@ -130,7 +130,16 @@
 
         }
 
+        function fn_get_data_one(key){
+          // console.log("here");
+          let memoRef = database.ref('memos/' + userInfo.uid + '/' + key).once('value').then(function(snapshot){
+            console.log(snapshot);
+            document.querySelector('.textarea').value = snapshot.val().txt;
+          });
+        }
+
         function on_child_added(data){
+          window.fn_get_data_one = fn_get_data_one;
           console.log(data.val());
           let key = data.key;
           let memoData = data.val();
@@ -146,13 +155,16 @@
             "</p>" +
             "</li>";
 
-            document.querySelector(".collection").insertAdjacentHTML("beforeend", html);
+            let collection = document.querySelector(".collection");
+            collection.insertAdjacentHTML("beforeend", html);
         }
 
         function save_data(){
           let memoRef = database.ref('memos/' + userInfo.uid);
           let txt = document.querySelector('.textarea').value;
-          let title = txt.indexOf('\n');
+          if (txt === ''){
+            return ;
+          }
           memoRef.push({
             txt : txt,
             createDate : new Date().getTime()
