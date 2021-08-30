@@ -72,6 +72,12 @@ function delete_data(key){
     let memoRef = database.ref('memos/' + userInfo.uid + '/' + key);
     memoRef.remove();
     document.querySelector("#"+key).remove();
+    initMemo();
+}
+
+function initMemo(){
+  document.querySelector(".textarea").value = "";
+  selectedKey = null;
 }
 
 function save_data(){
@@ -98,4 +104,5 @@ function save_data(){
 }
 
 document.querySelector('.textarea').addEventListener('blur', save_data);
+document.querySelector('.fixed-action-btn').addEventListener('click', initMemo);
 
