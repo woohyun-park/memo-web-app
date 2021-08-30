@@ -61,8 +61,8 @@
         </div>
       </div>
   </div>
-
-      <!--Import jQuery before materialize.js-->
+      <script type="module" src="index.js"></script>
+      Import jQuery before materialize.js
       <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
@@ -72,106 +72,9 @@
       <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
       <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
 
-      <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
-      <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-analytics.js"></script>
-
       <!-- Add Firebase products that you want to use -->
       <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-database.js"></script>
-
-      <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-      
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-          apiKey: "AIzaSyBwFWnjWz3CB11aeSi2W_nTAk30rThS5Uc",
-          authDomain: "memowebapp-8a8cd.firebaseapp.com",
-          databaseURL: "https://memowebapp-8a8cd-default-rtdb.firebaseio.com",
-          projectId: "memowebapp-8a8cd",
-          storageBucket: "memowebapp-8a8cd.appspot.com",
-          messagingSenderId: "794565040861",
-          appId: "1:794565040861:web:37b7697342a9da9d8b1934",
-          measurementId: "G-KY0RF943KB"
-        };
-      
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-
-
-
-        // My Auth
-        let auth, database, userInfo;
-
-        auth = firebase.auth();
-        database = firebase.database();
-        let authProvider = new firebase.auth.GoogleAuthProvider();
-        auth.onAuthStateChanged(function(user){
-          if (user){
-            //auth success
-            console.log("success");
-            userInfo = user;
-            get_memo_list();
-          } else {
-            //auth fail
-            console.log("failed");
-            auth.signInWithPopup(authProvider);
-          }
-        });
-
-        function get_memo_list(){
-          let memoRef = database.ref('memos/' + userInfo.uid);
-          memoRef.on('child_added', on_child_added);
-
-        }
-
-        function fn_get_data_one(key){
-          // console.log("here");
-          let memoRef = database.ref('memos/' + userInfo.uid + '/' + key).once('value').then(function(snapshot){
-            console.log(snapshot);
-            document.querySelector('.textarea').value = snapshot.val().txt;
-          });
-        }
-
-        function on_child_added(data){
-          window.fn_get_data_one = fn_get_data_one;
-          console.log(data.val());
-          let key = data.key;
-          let memoData = data.val();
-          let txt = memoData.txt;
-          let title = memoData.title;
-          let firstTxt = txt.substr(0, 1);
-
-          let html =
-            "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"fn_get_data_one(this.id);\" >" +
-            "<i class=\"material-icons circle red\">" + firstTxt + "</i>" +
-            "<span class=\"title\">" + title + "</span>" +
-            "<p class='txt'>" + txt + "<br>" +
-            "</p>" +
-            "</li>";
-
-            let collection = document.querySelector(".collection");
-            collection.insertAdjacentHTML("beforeend", html);
-        }
-
-        function save_data(){
-          let memoRef = database.ref('memos/' + userInfo.uid);
-          let txt = document.querySelector('.textarea').value;
-          if (txt === ''){
-            return ;
-          }
-          memoRef.push({
-            txt : txt,
-            createDate : new Date().getTime()
-          })
-        }
-
-        document.querySelector('.textarea').addEventListener('blur', save_data);
-      </script>
     </body>
   </html>
